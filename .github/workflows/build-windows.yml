@@ -64,26 +64,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set +e
-          gh auth status 2>&1 | tee /tmp/pub.log
-          echo "---- gh release upload ----" >> /tmp/pub.log
-          cat > /tmp/notes.md <<'NOTES'
-## HTML2Elementor 1.8.0
-- مرحله 1: image to HTML + AI chat box (preview before apply) + final approval
-- مرحله 2: HTML to Elementor + its own AI chat box
-- model import by folder picker (native Windows dialog) with automatic mmproj pairing
-- hybrid GPU+CPU mode with auto -ngl from GGUF block count + VRAM
-- 16K context, multi-turn chat, disk scan
-
-Recommended models (RTX 3050 8GB): vision: Qwen3-VL-8B Q4_K_M + mmproj Q8_0 - chat: Qwen2.5-Coder-7B Q4_K_M
-SHA-256 of this ZIP: see versions/SHA256SUMS-v1.8.0.txt in the repo.
-NOTES
-          if gh release view v1.8.0 >/dev/null 2>&1; then
-            gh release upload v1.8.0 latest-version/versions/HTML2Elementor-Windows-v1.8.0.zip --clobber 2>&1 | tee -a /tmp/pub.log
+          gh auth status > /tmp/pub.log 2>&1
+          printf '%s\n' "## HTML2Elementor 1.8.0" "- Stage 1: image to HTML + AI chat box (preview before apply) + final approval" "- Stage 2: HTML to Elementor + its own AI chat box" "- Model import by folder picker (native Windows dialog) with automatic mmproj pairing" "- Hybrid GPU+CPU mode with auto -ngl from GGUF block count + VRAM" "- 16K context, multi-turn chat, disk scan" "- Recommended (RTX 3050 8GB): vision Qwen3-VL-8B Q4_K_M + mmproj Q8_0; chat Qwen2.5-Coder-7B Q4_K_M" > /tmp/notes.md
+          echo "---- gh release ----" >> /tmp/pub.log
+          if gh release view v1.8.0 > /dev/null 2>&1; then
+            gh release upload v1.8.0 latest-version/versions/HTML2Elementor-Windows-v1.8.0.zip --clobber >> /tmp/pub.log 2>&1
           else
-            gh release create v1.8.0 latest-version/versions/HTML2Elementor-Windows-v1.8.0.zip --title "HTML2Elementor 1.8.0 - two stages + AI chat + folder import + hybrid GPU/CPU" --notes-file /tmp/notes.md 2>&1 | tee -a /tmp/pub.log
+            gh release create v1.8.0 latest-version/versions/HTML2Elementor-Windows-v1.8.0.zip --title "HTML2Elementor 1.8.0 - two stages + AI chat + folder import + hybrid GPU/CPU" --notes-file /tmp/notes.md >> /tmp/pub.log 2>&1
           fi
-          rc=${PIPESTATUS[0]}
-          echo "upload rc=$rc" >> /tmp/pub.log
+          rc=$?
+          echo "rc=$rc" >> /tmp/pub.log
           if [ "$rc" -ne 0 ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -99,4 +89,4 @@ NOTES
             git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/${GITHUB_REF_NAME} || true
             exit "$rc"
           fi
-          gh release view v1.8.0 --json assets -q '.assets[] | "asset: \(.name) \(.size)"'
+          gh release view v1.8.0 --json assets -q '.assets[] | "asset: \(.name) \(.size)"' >> /tmp/pub.log 2>&1
