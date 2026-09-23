@@ -1,0 +1,49 @@
+{
+  "status": "PASS",
+  "browser": "Chromium",
+  "checks": [
+    "source tree",
+    "row-reverse",
+    "column-reverse singleton",
+    "RTL/LTR",
+    "browser cascade !important",
+    "desktop media isolation",
+    "grid custom/equal",
+    "inherited font size",
+    "rem padding",
+    "button padding and icon",
+    "native widget detection",
+    "HTML form/audio fallback",
+    "script preservation without preview execution",
+    "hidden elements",
+    "live canvas scroll",
+    "click/edit JSON sync",
+    "repeater JSON sync",
+    "unique node IDs",
+    "empty native icon placeholders",
+    "responsive mobile layout and font",
+    "image input regression"
+  ],
+  "widgets": [
+    "accordion",
+    "alert",
+    "button",
+    "counter",
+    "google_maps",
+    "heading",
+    "html",
+    "icon",
+    "image-gallery",
+    "progress",
+    "star-rating",
+    "tabs",
+    "testimonial",
+    "text-editor"
+  ],
+  "scroll": {
+    "client": 804,
+    "height": 3329,
+    "top": 2000
+  },
+  "consoleErrors": []
+}

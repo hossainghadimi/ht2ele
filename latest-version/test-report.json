@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "test_kind": "browser integration with mock job endpoints; fixture scene, not real Qwen inference",
+  "checks": [
+    "image upload opens vision workspace",
+    "analysis job requested with real data URI",
+    "semantic containers and native heading/text/button/image/empty-icon, no HTML fallback",
+    "native button width and height",
+    "live text edit + JSON sync",
+    "375px mobile flow without horizontal overflow in fixture",
+    "overlay boxes",
+    "reclassify recognized node + rebuild",
+    "ZIP includes cropped image, analysis, reconstructed HTML, JSON and CSS"
+  ],
+  "widget_counts": {
+    "heading": 2,
+    "text-editor": 2,
+    "button": 1,
+    "image": 1,
+    "icon": 1
+  },
+  "mobile": {
+    "scroll": 375,
+    "width": 375
+  },
+  "consoleErrors": []
+}

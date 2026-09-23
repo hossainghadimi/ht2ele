@@ -1,0 +1,46 @@
+{
+  "platform": "Windows x64",
+  "python": "3.12.10",
+  "Pillow": "11.3.0",
+  "micrograd": "0.1.0",
+  "llama.cpp": "b11095 CPU",
+  "downloads": [
+    {
+      "file": "python.zip",
+      "url": "https://www.python.org/ftp/python/3.12.10/python-3.12.10-embed-amd64.zip",
+      "bytes": 11133606,
+      "sha256": "4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3"
+    },
+    {
+      "file": "llama.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b11095/llama-b11095-bin-win-cpu-x64.zip",
+      "bytes": 18551534,
+      "sha256": "170b23e0a52c4bee7afc26912472c9b64c891382fd0d78fd9a8fafe310d571f8"
+    },
+    {
+      "file": "vclibs.appx",
+      "url": "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx",
+      "bytes": 6764349,
+      "sha256": "b56a9101f706f9d95f815f5b7fa6efbac972e86573d378b96a07cff5540c5961"
+    },
+    {
+      "file": "LICENSE-llama.cpp.txt",
+      "url": "https://raw.githubusercontent.com/ggml-org/llama.cpp/b11095/LICENSE",
+      "bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    {
+      "file": "micrograd-0.1.0-py3-none-any.whl",
+      "source": "PyPI",
+      "bytes": 4885,
+      "sha256": "47d756d92043c7d7ef55372640dc1549780a8c22806b3a11cb3d4efc5937a4ae"
+    },
+    {
+      "file": "pillow-11.3.0-cp312-cp312-win_amd64.whl",
+      "source": "PyPI",
+      "bytes": 6986324,
+      "sha256": "a6444696fce635783440b7f7a9fc24b3ad10a9ea3f0ab66c5905be1c19ccf17d"
+    }
+  ],
+  "note": "Recorded source artifact hashes; no model weights bundled. Build script needs internet; the resulting app does not."
+}

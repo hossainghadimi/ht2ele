@@ -1,0 +1,5 @@
+**/build/vision-smoke-data/
+**/build/test-ai-data/
+__pycache__/
+*.pyc
+**/test-ai-data/

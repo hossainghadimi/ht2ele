@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "test_kind": "contract tests with explicitly injected fixture response, not Qwen visual accuracy",
+  "checks": [
+    "schema validation",
+    "cycle/parent/duplicate/type/NaN/bounds rejection",
+    "typed base64 image in model request",
+    "JSON schema transmitted",
+    "asynchronous result creation",
+    "cancellation rejects late result",
+    "truncation retry/error without fake fallback",
+    "tall image tiling coordinates"
+  ],
+  "version": "1.8.0",
+  "note": "regenerated during v1.8.0 packaging (same contract suite)"
+}

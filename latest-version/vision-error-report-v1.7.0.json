@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "test_kind": "mocked negative UI integration",
+  "checks": [
+    "missing vision model blocks analysis instead of raster fallback",
+    "cancel calls backend and re-enables run",
+    "canceled job does not create output"
+  ],
+  "pageErrors": []
+}

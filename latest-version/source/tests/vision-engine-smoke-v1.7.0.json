@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "test_kind": "real multimodal transport + constrained JSON smoke test; NOT Qwen or screenshot reconstruction accuracy",
+  "engine": "llama.cpp b11095 Linux CPU",
+  "model": "SmolVLM-256M-Instruct-Q8_0.gguf",
+  "projector": "mmproj-SmolVLM-256M-Instruct-Q8_0.gguf",
+  "source": "synthetic green circle image",
+  "response": {
+    "color": "green"
+  },
+  "active_model_vision": true,
+  "Windows_CUDA_RTX_Qwen4B": "not tested in this environment"
+}

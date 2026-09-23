@@ -1,0 +1,21 @@
+name: publish-release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload the release ZIP (committed in the repo)
+        run: |
+          set -e
+          ls -la latest-version/versions/
+          gh release upload v1.8.0 latest-version/versions/HTML2Elementor-Windows-v1.8.0.zip --clobber
+          gh release view v1.8.0 --json assets -q '.assets[] | "\(.name) \(.size)"'

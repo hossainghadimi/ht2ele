@@ -1,0 +1,230 @@
+{
+  "schema": 1,
+  "image": {
+    "width": 960,
+    "height": 600
+  },
+  "title": "Vision contract fixture",
+  "direction": "ltr",
+  "children": [
+    {
+      "id": "tile0",
+      "type": "container",
+      "parent": "",
+      "box": [
+        0,
+        0,
+        960,
+        600
+      ],
+      "layout": "column",
+      "text": "",
+      "style": {},
+      "children": [
+        {
+          "id": "t0-header",
+          "parent": "tile0",
+          "type": "container",
+          "box": [
+            40.0,
+            24.0,
+            880.0,
+            64.0
+          ],
+          "layout": "row",
+          "text": "",
+          "style": {
+            "background": "#ffffff",
+            "radius": 14.0
+          },
+          "children": [
+            {
+              "id": "t0-brand",
+              "parent": "t0-header",
+              "type": "heading",
+              "box": [
+                64.0,
+                40.0,
+                160.0,
+                30.0
+              ],
+              "layout": "column",
+              "text": "STUDIO",
+              "style": {
+                "color": "#162d50",
+                "font_size": 22.0,
+                "font_weight": 700
+              },
+              "children": []
+            },
+            {
+              "id": "t0-icon",
+              "parent": "t0-header",
+              "type": "icon",
+              "box": [
+                864.0,
+                42.0,
+                24.0,
+                24.0
+              ],
+              "layout": "column",
+              "text": "",
+              "style": {
+                "color": "#162d50"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "t0-hero",
+          "parent": "tile0",
+          "type": "container",
+          "box": [
+            40.0,
+            112.0,
+            880.0,
+            360.0
+          ],
+          "layout": "row",
+          "text": "",
+          "style": {
+            "background": "#eef3fb",
+            "radius": 18.0
+          },
+          "children": [
+            {
+              "id": "t0-copy",
+              "parent": "t0-hero",
+              "type": "container",
+              "box": [
+                64.0,
+                150.0,
+                424.0,
+                244.0
+              ],
+              "layout": "column",
+              "text": "",
+              "style": {},
+              "children": [
+                {
+                  "id": "t0-heading",
+                  "parent": "t0-copy",
+                  "type": "heading",
+                  "box": [
+                    64.0,
+                    156.0,
+                    400.0,
+                    90.0
+                  ],
+                  "layout": "column",
+                  "text": "Design better.\nBuild faster.",
+                  "style": {
+                    "color": "#172f50",
+                    "font_size": 32.0,
+                    "font_weight": 700
+                  },
+                  "children": []
+                },
+                {
+                  "id": "t0-text",
+                  "parent": "t0-copy",
+                  "type": "text",
+                  "box": [
+                    64.0,
+                    260.0,
+                    400.0,
+                    50.0
+                  ],
+                  "layout": "column",
+                  "text": "Editable containers and widgets,\ncreated from your reference image.",
+                  "style": {
+                    "color": "#405878",
+                    "font_size": 16.0
+                  },
+                  "children": []
+                },
+                {
+                  "id": "t0-button",
+                  "parent": "t0-copy",
+                  "type": "button",
+                  "box": [
+                    64.0,
+                    346.0,
+                    180.0,
+                    48.0
+                  ],
+                  "layout": "column",
+                  "text": "Start building",
+                  "style": {
+                    "color": "#ffffff",
+                    "background": "#e9387d",
+                    "font_size": 16.0,
+                    "radius": 12.0,
+                    "font_weight": 700
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "t0-photo",
+              "parent": "t0-hero",
+              "type": "image",
+              "box": [
+                552.0,
+                154.0,
+                336.0,
+                230.0
+              ],
+              "layout": "column",
+              "text": "Artwork",
+              "style": {
+                "radius": 16.0
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "t0-footer",
+          "parent": "tile0",
+          "type": "container",
+          "box": [
+            40.0,
+            504.0,
+            880.0,
+            60.0
+          ],
+          "layout": "column",
+          "text": "",
+          "style": {
+            "background": "#ffffff"
+          },
+          "children": [
+            {
+              "id": "t0-footerText",
+              "parent": "t0-footer",
+              "type": "text",
+              "box": [
+                64.0,
+                520.0,
+                700.0,
+                22.0
+              ],
+              "layout": "column",
+              "text": "Every piece stays editable.",
+              "style": {
+                "color": "#405878",
+                "font_size": 16.0
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "model": "TEST FIXTURE \u2014 NOT ACTUAL INFERENCE"
+}

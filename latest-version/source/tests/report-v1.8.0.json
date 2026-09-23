@@ -1,0 +1,217 @@
+{
+  "status": "PASS",
+  "version": "1.8.0",
+  "test_kind": "AI service E2E with mock llama.cpp engine (hybrid ngl, scan/upload/register, chat single/multi/html-edit, vision analyze path)",
+  "date": "2026-09-23 23:07:38",
+  "engine": "mock_llama_server.py (NOT the real engine; real Qwen/Windows/RTX untested here)",
+  "passed": 20,
+  "total": 20,
+  "checks": {
+    "status": {
+      "pass": true,
+      "detail": {
+        "engine": "stopped",
+        "cuda_engine": true,
+        "python": "3.11.2"
+      }
+    },
+    "models/scan": {
+      "pass": true,
+      "detail": {
+        "found": [
+          "MockCoder-7B-Q4_K_M.gguf",
+          "MockModel-4B-Q4_K_M.gguf",
+          "mmproj-MockModel-4B-Q8_0.gguf"
+        ],
+        "blocks": 36
+      }
+    },
+    "models/upload": {
+      "pass": true,
+      "detail": {
+        "path": "/tmp/h2e18-nklmcec2/data/models/Uploaded.gguf",
+        "bytes": 356
+      }
+    },
+    "models/upload rejects bad magic": {
+      "pass": true,
+      "detail": {
+        "error": "فایل GGUF معتبر نیست (سرآیند GGUF پیدا نشد)"
+      }
+    },
+    "models/importdir (folder + auto mmproj pairing)": {
+      "pass": true,
+      "detail": {
+        "dir": "/tmp/h2e18-nklmcec2/userdata/models",
+        "registered": [
+          {
+            "name": "Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf",
+            "path": "/tmp/h2e18-nklmcec2/userdata/models/Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf",
+            "projector": null,
+            "id": "b5be7919768e"
+          },
+          {
+            "name": "Qwen3-VL-8B-Instruct-Q4_K_M.gguf",
+            "path": "/tmp/h2e18-nklmcec2/userdata/models/Qwen3-VL-8B-Instruct-Q4_K_M.gguf",
+            "projector": "/tmp/h2e18-nklmcec2/userdata/models/mmproj-Qwen3-VL-8B-Instruct-Q8_0.gguf",
+            "id": "5b20f45c3163"
+          }
+        ],
+        "count": 2,
+        "unpaired_mmproj": []
+      }
+    },
+    "models/pickdir graceful on non-Windows": {
+      "pass": true,
+      "detail": {
+        "error": "POST لازم است"
+      }
+    },
+    "models/register (model+mmproj)": {
+      "pass": true,
+      "detail": {
+        "models": [
+          {
+            "id": "b5be7919768e",
+            "name": "Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf",
+            "path": "/tmp/h2e18-nklmcec2/userdata/models/Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf",
+            "bytes": 556,
+            "projector": "",
+            "vision": false
+          },
+          {
+            "id": "5b20f45c3163",
+            "name": "Qwen3-VL-8B-Instruct-Q4_K_M.gguf",
+            "path": "/tmp/h2e18-nklmcec2/userdata/models/Qwen3-VL-8B-Instruct-Q4_K_M.gguf",
+            "bytes": 956,
+            "projector": "/tmp/h2e18-nklmcec2/userdata/models/mmproj-Qwen3-VL-8B-Instruct-Q8_0.gguf",
+            "vision": true
+          },
+          {
+            "id": "c97fb95c7341",
+            "name": "MockModel-4B-Q4_K_M.gguf",
+            "path": "/tmp/h2e18-nklmcec2/data/models/MockModel-4B-Q4_K_M.gguf",
+            "bytes": 1056,
+            "projector": "/tmp/h2e18-nklmcec2/data/models/mmproj-MockModel-4B-Q8_0.gguf",
+            "vision": true
+          }
+        ],
+        "id": "c97fb95c7341"
+      }
+    },
+    "models/start hybrid auto-ngl": {
+      "pass": true,
+      "detail": {
+        "state": "loading",
+        "mode": "hybrid",
+        "ngl": 36,
+        "blocks": 36
+      }
+    },
+    "engine ready (hybrid)": {
+      "pass": true,
+      "detail": {
+        "engine": "ready",
+        "active": {
+          "id": "c97fb95c7341",
+          "name": "MockModel-4B-Q4_K_M.gguf",
+          "vision": true,
+          "mode": "hybrid",
+          "ngl": 36,
+          "vram_gb": 8.0,
+          "blocks": 36,
+          "context": 16384
+        }
+      }
+    },
+    "engine args (mock recorded)": {
+      "pass": true,
+      "detail": {
+        "m": "/tmp/h2e18-nklmcec2/data/models/MockModel-4B-Q4_K_M.gguf",
+        "host": "127.0.0.1",
+        "port": "38765",
+        "api-key": "wxDfI_X6P_6Ql1bLzpyNR1k1Gknk7oQG",
+        "c": "16384",
+        "t": "2",
+        "ngl": "36",
+        "mmproj": "/tmp/h2e18-nklmcec2/data/models/mmproj-MockModel-4B-Q8_0.gguf"
+      }
+    },
+    "chat plain prompt": {
+      "pass": true,
+      "detail": {
+        "text": "OK-TEST :: سلام"
+      }
+    },
+    "chat html-edit request": {
+      "pass": true,
+      "detail": "```html\n<!doctype html><html dir=\"rtl\"><head><meta charset=\"utf-8\"></head><body><main class=\"vl-page\" style=\"background:"
+    },
+    "chat multi-turn": {
+      "pass": true,
+      "detail": {
+        "text": "OK-TEST :: مرحله ۱ پاسخ ۱ مرحله ۲"
+      }
+    },
+    "chat rejects bad role": {
+      "pass": true,
+      "detail": {
+        "error": "role پیام نامعتبر است"
+      }
+    },
+    "models/start rejects bad mode": {
+      "pass": true,
+      "detail": {
+        "error": "موتور باید cpu، cuda یا hybrid باشد."
+      }
+    },
+    "vision/analyze E2E (mock VL)": {
+      "pass": true,
+      "detail": {
+        "state": "ready",
+        "error": null,
+        "node_count": 1
+      }
+    },
+    "text model cpu start (16K context)": {
+      "pass": true,
+      "detail": {
+        "engine": "ready",
+        "active": {
+          "id": "867480df7b04",
+          "name": "MockCoder-7B-Q4_K_M.gguf",
+          "vision": false,
+          "mode": "cpu",
+          "ngl": 0,
+          "vram_gb": 0.0,
+          "blocks": 28,
+          "context": 16384
+        }
+      }
+    },
+    "text model engine args (-c 16384, -ngl 0)": {
+      "pass": true,
+      "detail": {
+        "m": "/tmp/h2e18-nklmcec2/data/models/MockCoder-7B-Q4_K_M.gguf",
+        "host": "127.0.0.1",
+        "port": "47891",
+        "api-key": "wxDfI_X6P_6Ql1bLzpyNR1k1Gknk7oQG",
+        "c": "16384",
+        "t": "2",
+        "ngl": "0"
+      }
+    },
+    "chat after text model switch": {
+      "pass": true,
+      "detail": {
+        "text": "OK-TEST :: test 16k"
+      }
+    },
+    "models/stop": {
+      "pass": true,
+      "detail": {
+        "state": "stopped"
+      }
+    }
+  }
+}

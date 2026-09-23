@@ -1,0 +1,3 @@
+# Installed in the portable Windows runtime. No pip step for end users.
+Pillow==11.3.0
+micrograd==0.1.0
