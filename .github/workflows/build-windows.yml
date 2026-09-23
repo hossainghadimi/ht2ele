@@ -15,6 +15,9 @@ on:
       - 'latest-version/source/web/**'
       - '.github/workflows/build-windows.yml'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -47,9 +50,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add latest-version/source/dist/HTML2Elementor.exe
-          if (git diff --cached --quiet) {
+          git diff --cached --quiet
+          if ($LASTEXITCODE -eq 0) {
             Write-Host "EXE unchanged; nothing to commit"
           } else {
             git commit -m "build: HTML2Elementor.exe v1.8.0 (windows-amd64, go 1.24, embedded web UI)"
-            git push origin HEAD
+            git push "https://x-access-token:${env:GITHUB_TOKEN}@github.com/${env:GITHUB_REPOSITORY}.git" HEAD:refs/heads/${env:GITHUB_REF_NAME}
           }
