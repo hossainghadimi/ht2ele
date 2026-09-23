@@ -248,18 +248,20 @@ def dispatch(path, data=None):
             if model.get('projector'):gguf_path(model['projector'])
             stop_engine()
             with socket.socket() as s:s.bind(('127.0.0.1',0));ENGINE_PORT=s.getsockname()[1]
-            context=8192 if model.get('projector') else 2048
+            context=16384
             blocks=gguf_blocks(model['path'])
-            vram=0.0;ngl=0
+            vram=0.0;ngl=0;proj_gb=0.0
             if mode!='cpu':
                 try:vram=max(2.0,min(96.0,float(data.get('vram_gb') or 8.0)))
                 except Exception:vram=8.0
+                try:proj_gb=max(0.0,float(os.path.getsize(model['projector']) if model.get('projector') else 0))/1_073_741_824
+                except Exception:proj_gb=0.0
                 ngl_req=data.get('ngl')
                 if isinstance(ngl_req,(int,float)) and not isinstance(ngl_req,bool) and int(ngl_req)>=0:
                     ngl=int(ngl_req)
                 elif blocks:
                     per_layer=max(1.0,float(model.get('bytes') or 0)/blocks)
-                    usable_gb=max(0.5,vram*0.70-1.0)
+                    usable_gb=max(0.5,vram*0.70-1.0-proj_gb*0.9)
                     ngl=max(0,min(blocks,int(usable_gb*1_000_000_000//per_layer)))
                 else:
                     ngl=20
@@ -338,7 +340,7 @@ def dispatch(path, data=None):
         system=data.get('system')
         if isinstance(system,str) and system.strip():
             messages=[{'role':'system','content':system[:4000]}]+messages
-        try:max_tokens=max(64,min(8192,int(data.get('max_tokens') or 2048)))
+        try:max_tokens=max(64,min(16384,int(data.get('max_tokens') or 4096)))
         except Exception:raise ValueError('max_tokens نامعتبر است')
         try:temperature=max(0.0,min(2.0,float(data.get('temperature') or 0.3)))
         except Exception:temperature=0.3

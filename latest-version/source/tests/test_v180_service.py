@@ -72,6 +72,7 @@ def main():
         models_dir.mkdir(parents=True)
         (models_dir / "MockModel-4B-Q4_K_M.gguf").write_bytes(fake_gguf(36, pad=1000))
         (models_dir / "mmproj-MockModel-4B-Q8_0.gguf").write_bytes(fake_gguf(4, pad=500))
+        (models_dir / "MockCoder-7B-Q4_K_M.gguf").write_bytes(fake_gguf(28, pad=800))
 
         env = dict(os.environ)
         env["H2E_DATA"] = str(tmp / "data")
@@ -166,6 +167,26 @@ def main():
         scene_ok = job.get("state") == "ready" and job.get("result", {}).get("children")
         step("vision/analyze E2E (mock VL)", st == 200 and bool(job_id) and bool(scene_ok),
              {"state": job.get("state"), "error": job.get("error"), "node_count": len(job.get("result", {}).get("children", []))})
+
+        st, r = call("models/register", {"path": str(models_dir / "MockCoder-7B-Q4_K_M.gguf")})
+        coder_id = r.get("id")
+        st, r = call("models/start", {"id": coder_id, "mode": "cpu"})
+        deadline = time.time() + 20
+        engine_state = None
+        while time.time() < deadline:
+            _, s = call("status")
+            engine_state = s.get("engine")
+            if engine_state in ("ready", "stopped"):
+                break
+            time.sleep(0.4)
+        active = s.get("active_model", {})
+        step("text model cpu start (16K context)", st == 200 and engine_state == "ready" and active.get("context") == 16384 and active.get("ngl") == 0,
+             {"engine": engine_state, "active": active})
+        args_files = sorted((tmp / "mockargs").glob("args-*.json"))
+        args_cpu = json.loads(args_files[-1].read_text()) if args_files else {}
+        step("text model engine args (-c 16384, -ngl 0)", args_cpu.get("c") == "16384" and args_cpu.get("ngl") == "0" and "mmproj" not in args_cpu, args_cpu)
+        st, r = call("chat", {"prompt": "test 16k"})
+        step("chat after text model switch", st == 200 and str(r.get("text", "")).startswith("OK-TEST"), r)
 
         st, r = call("models/stop", {})
         step("models/stop", st == 200 and r.get("state") == "stopped", r)

@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "test_kind": "real multimodal transport + constrained JSON smoke test; NOT Qwen or screenshot reconstruction accuracy",
+  "engine": "mock llama.cpp engine (transport + constrained-JSON path; real Qwen/CUDA on Windows not tested here)",
+  "model": "fake-8b.gguf",
+  "projector": "mmproj-fake.gguf",
+  "source": "synthetic green circle image",
+  "response": {
+    "color": "green"
+  },
+  "active_model_vision": true,
+  "Windows_CUDA_RTX_Qwen4B": "not tested in this environment",
+  "version": "1.8.0",
+  "note": "transport smoke re-run with v1.8.0 service + mock engine"
+}

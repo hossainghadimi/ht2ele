@@ -86,7 +86,9 @@ class Handler(BaseHTTPRequestHandler):
             self._send(400, {"error": "bad json"})
             return
         text = user_text(payload)
-        if "Reconstruct the visible website screenshot" in text:
+        if "What color is the circle?" in text:
+            content = '{"color":"green"}'
+        elif "Reconstruct the visible website screenshot" in text:
             content = json.dumps(VISION_SCENE)
         elif "Document to edit" in text:
             content = "```html\n<!doctype html><html dir=\"rtl\"><head><meta charset=\"utf-8\"></head><body><main class=\"vl-page\" style=\"background:#eef\">MOCK-EDITED :: " + re.sub(r"\s+", " ", text)[:400] + "</main></body></html>\n```"

@@ -1,0 +1,42 @@
+name: build-windows-exe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - arena/01a0cfe3-ht2ele
+    paths:
+      - 'latest-version/source/main.go'
+      - 'latest-version/source/ai_bridge.go'
+      - 'latest-version/source/releases.go'
+      - 'latest-version/source/console_windows.go'
+      - 'latest-version/source/console_other.go'
+      - 'latest-version/source/go.mod'
+      - 'latest-version/source/web/**'
+      - '.github/workflows/build-windows.yml'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Build EXE (embeds web UI)
+        working-directory: latest-version/source
+        env:
+          CGO_ENABLED: 0
+          GOOS: windows
+          GOARCH: amd64
+        run: go build -trimpath -ldflags "-s -w" -o dist/HTML2Elementor.exe .
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: html2elementor-windows-exe
+          path: latest-version/source/dist/HTML2Elementor.exe
