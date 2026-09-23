@@ -6,3 +6,9 @@ github.com
 ---- gh release upload ----
 release not found
 upload rc=1
+To https://github.com/hossainghadimi/ht2ele.git
+   6213db0..0fcc52e  HEAD -> arena/01a0cfe3-ht2ele
+From https://github.com/hossainghadimi/ht2ele
+ * [new branch]      arena/01a0cfe3-ht2ele -> origin/ci
+Current branch arena/01a0cfe3-ht2ele is up to date.
+Everything up-to-date
