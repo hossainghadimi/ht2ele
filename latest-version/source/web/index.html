@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HTML به المنتور</title>
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 7.5h16M4 12h10M4 16.5h7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M16 14.5l4 3-4 3" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1>HTML به المنتور</h1>
+          <p>تبدیل HTML یا تصویر سکشن به قالب JSON المنتور + فایل CSS جدا</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="badge">ویندوز · آفلاین · نسخه ۱.۷.۰</div>
+        <a class="btn btn-winzip" id="btnWinZip" href="/download/windows.zip" download="HTML2Elementor-Windows.zip" hidden>دانلود نسخه ویندوز (ZIP)</a>
+        <a class="btn btn-ghost" id="btnVersions" href="/download/versions.zip" hidden>آرشیو نسخه‌ها</a>
+        <button class="btn btn-exit" id="btnExit" type="button" hidden>خروج از برنامه</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="card panel">
+        <h2>۱. فایل‌ها</h2>
+        <div class="drop" id="drop">
+          <strong>HTML، CSS یا تصویر سکشن را رها کنید</strong>
+          <span>html / css / png / jpg / webp · چند فایل همزمان</span>
+        </div>
+        <input id="fileInput" type="file" accept=".html,.htm,.css,.xhtml,.png,.jpg,.jpeg,.webp,.gif,.bmp" multiple hidden />
+        <div class="files" id="fileList"></div>
+
+        <h2 style="margin-top:22px">۲. تنظیمات خروجی</h2>
+          <div class="field"><label for="optImageMode">روش تبدیل تصویر</label><select id="optImageMode"><option value="ai">Qwen-VL — تشخیص و ساخت ویجت</option><option value="legacy">روش سادهٔ قبلی — قطعات تصویری</option></select></div>
+        <div class="field">
+          <label for="optType">نوع قالب المنتور</label>
+          <select id="optType">
+            <option value="page" selected>برگه (Page)</option>
+            <option value="section">سکشن (Section)</option>
+            <option value="container">کانتینر</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="optLayout">ساختار چیدمان</label>
+          <select id="optLayout">
+            <option value="container" selected>کانتینر فلکس‌باکس (المنتور جدید)</option>
+            <option value="section">سکشن و ستون (سازگاری قدیمی)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="optMode">حالت تبدیل</label>
+          <select id="optMode">
+            <option value="hybrid" selected>ترکیبی — پیشنهادی (ویجت بومی + HTML پیچیده)</option>
+            <option value="native">فقط ویجت‌های بومی المنتور</option>
+            <option value="html">کل صفحه داخل ویجت HTML (نزدیک به طرح اصلی)</option>
+          </select>
+        </div>
+
+        <label class="toggle">
+          <div>راست‌چین (RTL)<small>برای برگه‌های فارسی</small></div>
+          <span class="switch"><input id="optRtl" type="checkbox" checked /><i></i></span>
+        </label>
+        <label class="toggle">
+          <div>حفظ کلاس‌های CSS<small>کلاس‌های HTML روی ویجت‌ها می‌مانند</small></div>
+          <span class="switch"><input id="optKeep" type="checkbox" checked /><i></i></span>
+        </label>
+        <label class="toggle">
+          <div>محدود کردن CSS<small>سلکتورها با .elementor پیشوند می‌خورند</small></div>
+          <span class="switch"><input id="optScope" type="checkbox" /><i></i></span>
+        </label>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="btnConvert">تبدیل به المنتور</button>
+          <button class="btn btn-ghost" id="btnSample" type="button">نمونه</button>
+          <button class="btn btn-ghost" id="btnClear" type="button">پاک کردن</button>
+        </div>
+      </aside>
+
+      <main class="card workspace">
+        <div class="tabs">
+          <button class="tab active" data-tab="source" type="button">پیش‌نمایش و اصلاح ورودی</button>
+          <button class="tab" data-tab="convert" type="button">خروجی</button>
+          <button class="tab" data-tab="live" type="button">پیش‌نمایش و ویرایش</button>
+          <button class="tab" data-tab="json" type="button">کد JSON</button>
+          <button class="tab" data-tab="vision" type="button">تصویر به طرح با Qwen</button>
+          <button class="tab" data-tab="ai" type="button">کارگاه AI و آموزش</button>
+          <button class="tab" data-tab="help" type="button">راهنمای وارد کردن</button>
+        </div>
+
+        <section class="pane active" id="pane-source"><div id="sourceHost"></div></section>
+        <section class="pane" id="pane-convert">
+          <div id="resultsHost"></div>
+        </section>
+
+        <section class="pane" id="pane-live">
+          <div id="liveHost"></div>
+        </section>
+
+        <section class="pane" id="pane-json">
+          <div id="jsonHost"></div>
+        </section>
+
+        <section class="pane" id="pane-vision"></section>
+        <section class="pane" id="pane-ai"></section>
+        <section class="pane help" id="pane-help">
+          <h3>قبل از تبدیل، ورودی را اصلاح کنید</h3><p>تب «پیش‌نمایش و اصلاح ورودی» بدون تبدیل باز می‌شود. روی المان کلیک کنید، نوع ویجت و استایل را تعیین کنید، سپس تبدیل را بزنید. در ویرایش خروجی نیز «تغییر نوع ویجت» و بازگشت تغییر در دسترس است.</p>
+          <h3>خروجی نرم‌افزار چیست؟</h3>
+          <p>برای هر فایل HTML سه چیز ساخته می‌شود:</p>
+          <div class="step"><b>name.json</b> — قالب رسمی المنتور (version 0.4) برای وارد کردن از کتابخانه قالب‌ها.</div>
+          <div class="step"><b>name.css</b> — تمام CSSهای داخل صفحه، فایل‌های لینک‌شده، و استایل اینلاین باقی‌مانده. جدا از JSON.</div>
+          <div class="step"><b>name.clipboard.json</b> — فرمت Paste داخل بوم المنتور (راست‌کلیک → Paste).</div>
+
+          <h3>روش ۱ — وارد کردن قالب (پیشنهادی)</h3>
+          <ol>
+            <li>در پیشخوان وردپرس بروید به <b>قالب‌ها ← قالب‌های ذخیره‌شده</b> (Templates → Saved Templates).</li>
+            <li>دکمه <b>وارد کردن قالب</b> (Import Templates) را بزنید.</li>
+            <li>فایل <b>.json</b> را انتخاب کنید.</li>
+            <li>برگه یا نوشته را با المنتور باز کنید → افزودن قالب → قالب واردشده را درج کنید.</li>
+          </ol>
+
+          <h3>روش ۲ — چسباندن مستقیم در بوم</h3>
+          <ol>
+            <li>دکمه «کپی برای Paste در المنتور» را بزنید.</li>
+            <li>صفحه را با المنتور باز کنید، روی بوم راست‌کلیک کنید و <b>Paste</b> را بزنید.</li>
+          </ol>
+
+          <h3>فایل CSS را کجا بگذارم؟</h3>
+          <p>طبق خواسته شما CSS داخل JSON قاطی نمی‌شود و فایل جدا است. یکی از این کارها را بکنید:</p>
+          <ol>
+            <li><b>ظاهر ← سفارشی‌سازی ← CSS اضافی</b> و محتوای فایل CSS را پیست کنید.</li>
+            <li>فایل CSS را در چایلد‌تم بگذارید و از قطعه PHP همراه خروجی (enqueue-*.php) استفاده کنید.</li>
+            <li>اگر المنتور پرو دارید، می‌توانید CSS را در Site Settings → Custom CSS هم بگذارید.</li>
+          </ol>
+          <p>کلاس‌های اصلی HTML روی کانتینر/ویجت‌ها در فیلد <b>Advanced → CSS Classes</b> حفظ می‌شوند تا همان فایل CSS روی طرح اعمال شود.</p>
+
+          <h3>کدام حالت تبدیل را انتخاب کنم؟</h3>
+          <div class="step"><b>ترکیبی:</b> تیتر، متن، تصویر، دکمه، لیست و ویدیو می‌شوند ویجت بومی. فرم و جدول پیچیده داخل HTML می‌مانند؛ آیکن‌های شناسایی‌شده ویجت آیکن خالی می‌شوند.</div>
+          <div class="step"><b>ویجت‌های بومی:</b> حداکثر ویرایش‌پذیری در المنتور. ممکن است جزئیات طرح کمی فرق کند.</div>
+          <div class="step"><b>ویجت HTML:</b> کل بدنه صفحه داخل یک ویجت HTML است. با فایل CSS جدا، نزدیک‌ترین ظاهر به HTML اصلی را می‌دهد ولی ویرایش بلوکی سخت‌تر است.</div>
+
+          <h3>تبدیل هوشمند تصویر طرح با Qwen-VL</h3><p>تب «تصویر به طرح با Qwen» تصویر را با مدل بینایی و فایل mmproj تحلیل می‌کند و کانتینرها و ویجت‌های بومی قابل‌ویرایش می‌سازد. مدل متنی قبلی کافی نیست. لینک دو فایل لازم داخل همان تب است. ریسپانسیو، فونت و لینک‌ها نیاز به بازبینی دارند.</p>
+          <h3>روش سادهٔ قدیمی تصویر — بدون مدل</h3>
+          <p>اسکرین‌شات PNG/JPG یک سکشن را رها کنید. برنامه نوارهای افقی/عمودی را تشخیص می‌دهد، کانتینر ردیف یا ستون می‌سازد، رنگ یکدست را پس‌زمینه می‌کند و محتوای پیچیده را به‌صورت ویجت تصویر برش می‌دهد.</p>
+
+          <h3>نکته‌ها</h3>
+          <ul>
+            <li>اگر صفحه به فایل CSS خارجی لینک شده، همان فایل CSS را هم همراه HTML در نرم‌افزار رها کنید.</li>
+            <li>تگ‌های &lt;script&gt; به‌صورت ویجت HTML در قالب می‌مانند.</li>
+            <li>تصاویر با URL موجود در HTML ذخیره می‌شوند. بعد از ایمپورت، بهتر است تصاویر را در رسانه وردپرس آپلود کنید.</li>
+            <li>سلکتورهایی مثل <code>.hero &gt; h1</code> ممکن است به‌خاطر پوشش HTML المنتور دقیق کار نکنند؛ در این صورت حالت «ویجت HTML» را امتحان کنید.</li>
+            <li>در تب <b>پیش‌نمایش و ویرایش</b> روی هر المان کلیک کنید. پنل تنظیمات (محتوا، استایل، پیشرفته) شبیه المنتور باز می‌شود و JSON همان لحظه به‌روز می‌گردد.</li>
+          </ul>
+        </section>
+      </main>
+    </div>
+    <p class="foot">HTML2Elementor · خروجی سازگار با ساختار رسمی المنتور نسخه ۰.۴ · CSS همیشه جدا ذخیره می‌شود</p>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="vendor/fontawesome/icons.js"></script>
+  <script src="vendor/css-specificity.js"></script>
+  <script src="converter.js"></script>
+  <script src="samples/embedded.js"></script>
+  <script src="canvas-tools.js"></script>
+  <script src="source-editor.js"></script>
+  <script src="widget-types.js"></script>
+  <script src="preview.js"></script>
+  <script src="vision-layout.js"></script>
+  <script src="app.js"></script>
+  <script src="vision-studio.js"></script>
+  <script src="ai-studio.js"></script>
+</body>
+</html>

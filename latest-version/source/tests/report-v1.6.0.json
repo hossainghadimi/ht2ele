@@ -1,0 +1,87 @@
+{
+  "status": "PASS",
+  "checks": [
+    "source deletion + undo",
+    "source pointer resize and sibling reorder, mobile only",
+    "manual style editing after retype",
+    "three-device appearance preservation on text-to-button: box/color/border/padding/margin/gradient/shadow",
+    "responsive size controls",
+    "actual pointer sibling drag/drop",
+    "desktop unchanged after mobile order edit",
+    "delete + undo output",
+    "actual pointer resize",
+    "live JSON/clipboard",
+    "AI workspace online local service"
+  ],
+  "appearanceBefore": {
+    "desktop": {
+      "width": 400,
+      "height": 72,
+      "padding": "18px 22px",
+      "margin": "5px 9px",
+      "border": "3px solid rgb(168, 52, 85)",
+      "borderRadius": "17px",
+      "background": "linear-gradient(45deg, rgb(232, 237, 253), rgb(241, 196, 205))",
+      "shadow": "rgba(17, 34, 51, 0.267) 3px 5px 8px 0px",
+      "color": "rgb(24, 51, 102)"
+    },
+    "tablet": {
+      "width": 400,
+      "height": 72,
+      "padding": "18px 22px",
+      "margin": "5px 9px",
+      "border": "3px solid rgb(168, 52, 85)",
+      "borderRadius": "17px",
+      "background": "linear-gradient(45deg, rgb(232, 237, 253), rgb(241, 196, 205))",
+      "shadow": "rgba(17, 34, 51, 0.267) 3px 5px 8px 0px",
+      "color": "rgb(24, 51, 102)"
+    },
+    "mobile": {
+      "width": 290,
+      "height": 44,
+      "padding": "8px",
+      "margin": "4px",
+      "border": "2px solid rgb(168, 52, 85)",
+      "borderRadius": "6px",
+      "background": "linear-gradient(45deg, rgb(232, 237, 253), rgb(241, 196, 205))",
+      "shadow": "rgba(17, 34, 51, 0.267) 3px 5px 8px 0px",
+      "color": "rgb(24, 51, 102)"
+    }
+  },
+  "appearanceAfter": {
+    "desktop": {
+      "width": 400,
+      "height": 72,
+      "padding": "18px 22px",
+      "margin": "5px 9px",
+      "border": "3px solid rgb(168, 52, 85)",
+      "borderRadius": "17px",
+      "background": "linear-gradient(45deg, rgb(232, 237, 253), rgb(241, 196, 205))",
+      "shadow": "rgba(17, 34, 51, 0.267) 3px 5px 8px 0px",
+      "color": "rgb(24, 51, 102)"
+    },
+    "tablet": {
+      "width": 400,
+      "height": 72,
+      "padding": "18px 22px",
+      "margin": "5px 9px",
+      "border": "3px solid rgb(168, 52, 85)",
+      "borderRadius": "17px",
+      "background": "linear-gradient(45deg, rgb(232, 237, 253), rgb(241, 196, 205))",
+      "shadow": "rgba(17, 34, 51, 0.267) 3px 5px 8px 0px",
+      "color": "rgb(24, 51, 102)"
+    },
+    "mobile": {
+      "width": 290,
+      "height": 44,
+      "padding": "8px",
+      "margin": "4px",
+      "border": "2px solid rgb(168, 52, 85)",
+      "borderRadius": "6px",
+      "background": "linear-gradient(45deg, rgb(232, 237, 253), rgb(241, 196, 205))",
+      "shadow": "rgba(17, 34, 51, 0.267) 3px 5px 8px 0px",
+      "color": "rgb(24, 51, 102)"
+    }
+  },
+  "errors": []
+}

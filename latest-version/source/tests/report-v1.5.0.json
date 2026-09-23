@@ -1,0 +1,225 @@
+{
+  "status": "PASS",
+  "checks": [
+    "input preview before conversion",
+    "source widget type override",
+    "source text and URL edit",
+    "device-specific source spacing edits",
+    "CSS link/style order",
+    "CSS specificity + important for percentage widths",
+    "generic SVG and nav inline icons are native empty icons",
+    "source/output pixel rect comparison at 1200/768/375",
+    "output text-to-button and undo",
+    "output HTML-to-icon and undo",
+    "JSON and clipboard live sync",
+    "script retention/no execution in either frame",
+    "iframe page scroll",
+    "source undo and stale-output invalidation"
+  ],
+  "comparisons": {
+    "desktop": {
+      "source": {
+        "title": {
+          "x": 300,
+          "y": 46,
+          "width": 600,
+          "height": 48,
+          "padding": "0px",
+          "margin": "0px 0px 12px",
+          "font": "32px",
+          "display": "block"
+        },
+        "first": {
+          "x": 300,
+          "y": 106,
+          "width": 600,
+          "height": 27,
+          "padding": "0px",
+          "margin": "0px 0px 24px",
+          "font": "18px",
+          "display": "block"
+        },
+        "second": {
+          "x": 300,
+          "y": 157,
+          "width": 600,
+          "height": 27,
+          "padding": "0px",
+          "margin": "0px 0px 24px",
+          "font": "18px",
+          "display": "block"
+        }
+      },
+      "output": {
+        "title": {
+          "x": 300,
+          "y": 46,
+          "width": 600,
+          "height": 48,
+          "padding": "0px",
+          "margin": "0px 0px 12px",
+          "font": "18px",
+          "display": "block"
+        },
+        "first": {
+          "x": 300,
+          "y": 106,
+          "width": 600,
+          "height": 27,
+          "padding": "0px",
+          "margin": "0px 0px 24px",
+          "font": "18px",
+          "display": "block"
+        },
+        "second": {
+          "x": 300,
+          "y": 157,
+          "width": 600,
+          "height": 27,
+          "padding": "0px",
+          "margin": "0px 0px 24px",
+          "font": "18px",
+          "display": "block"
+        }
+      }
+    },
+    "tablet": {
+      "source": {
+        "title": {
+          "x": 84,
+          "y": 46,
+          "width": 600,
+          "height": 48,
+          "padding": "0px",
+          "margin": "0px 0px 12px",
+          "font": "32px",
+          "display": "block"
+        },
+        "first": {
+          "x": 84,
+          "y": 106,
+          "width": 600,
+          "height": 27,
+          "padding": "0px",
+          "margin": "0px 0px 24px",
+          "font": "18px",
+          "display": "block"
+        },
+        "second": {
+          "x": 84,
+          "y": 157,
+          "width": 600,
+          "height": 27,
+          "padding": "0px",
+          "margin": "0px 0px 24px",
+          "font": "18px",
+          "display": "block"
+        }
+      },
+      "output": {
+        "title": {
+          "x": 84,
+          "y": 46,
+          "width": 600,
+          "height": 48,
+          "padding": "0px",
+          "margin": "0px 0px 12px",
+          "font": "18px",
+          "display": "block"
+        },
+        "first": {
+          "x": 84,
+          "y": 106,
+          "width": 600,
+          "height": 27,
+          "padding": "0px",
+          "margin": "0px 0px 24px",
+          "font": "18px",
+          "display": "block"
+        },
+        "second": {
+          "x": 84,
+          "y": 157,
+          "width": 600,
+          "height": 27,
+          "padding": "0px",
+          "margin": "0px 0px 24px",
+          "font": "18px",
+          "display": "block"
+        }
+      }
+    },
+    "mobile": {
+      "source": {
+        "title": {
+          "x": 16,
+          "y": 30,
+          "width": 343,
+          "height": 36,
+          "padding": "0px",
+          "margin": "0px 0px 12px",
+          "font": "24px",
+          "display": "block"
+        },
+        "first": {
+          "x": 16,
+          "y": 78,
+          "width": 343,
+          "height": 24,
+          "padding": "0px",
+          "margin": "0px 0px 10px",
+          "font": "16px",
+          "display": "block"
+        },
+        "second": {
+          "x": 16,
+          "y": 112,
+          "width": 343,
+          "height": 24,
+          "padding": "0px",
+          "margin": "0px 0px 7px",
+          "font": "16px",
+          "display": "block"
+        }
+      },
+      "output": {
+        "title": {
+          "x": 16,
+          "y": 30,
+          "width": 343,
+          "height": 36,
+          "padding": "0px",
+          "margin": "0px 0px 12px",
+          "font": "18px",
+          "display": "block"
+        },
+        "first": {
+          "x": 16,
+          "y": 78,
+          "width": 343,
+          "height": 24,
+          "padding": "0px",
+          "margin": "0px 0px 10px",
+          "font": "18px",
+          "display": "block"
+        },
+        "second": {
+          "x": 16,
+          "y": 112,
+          "width": 343,
+          "height": 24,
+          "padding": "0px",
+          "margin": "0px 0px 7px",
+          "font": "18px",
+          "display": "block"
+        }
+      }
+    }
+  },
+  "scroll": {
+    "top": 1837,
+    "height": 2689,
+    "client": 852
+  },
+  "consoleErrors": []
+}

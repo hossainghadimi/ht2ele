@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "libraries": [
+    "Pillow 11.3.0 (Windows bundle)",
+    "micrograd 0.1.0"
+  ],
+  "checks": [
+    "token authorization",
+    "minimum training set validation",
+    "image feature extraction",
+    "actual gradient training",
+    "JSON classifier persistence",
+    "prediction",
+    "dataset export/import",
+    "reject NaN and remote model URLs"
+  ],
+  "training": {
+    "state": "ready",
+    "samples": 6,
+    "training_accuracy": 1.0,
+    "note": "امتیاز روی داده آموزشی است؛ ارزیابی مستقل نیست."
+  },
+  "GGUF_test": {
+    "engine": "llama.cpp b11095 Linux CPU",
+    "model": "Qwen2.5-0.5B-Instruct Q4_K_M",
+    "response": "Hello! How can I assist you today?"
+  },
+  "Windows_execution": "not tested; Linux reference engine used for inference test"
+}

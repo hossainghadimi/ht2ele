@@ -1,0 +1,78 @@
+{
+  "status": "PASS",
+  "checks": [
+    "native empty icons: FA/material/SVG/Bootstrap/social/list",
+    "native buttons: button/role/input/anchor/SVG",
+    "device padding-margin-border-radius and zero resets",
+    "mixed percent/px spacing and auto margins",
+    "grid and flex mobile settings",
+    "mobile-only content preserved",
+    "auto width restores on mobile",
+    "live mobile rendering",
+    "manual icon selection reflected in JSON",
+    "mobile editing does not mutate desktop",
+    "scripts retained without preview execution",
+    "vertical scroll",
+    "exported CSS: exact 900px/600px source breakpoints"
+  ],
+  "sourceBreakpoints": {
+    "1100": [
+      "row",
+      "20px",
+      "3px"
+    ],
+    "950": [
+      "row",
+      "20px",
+      "3px"
+    ],
+    "850": [
+      "column",
+      "10px",
+      "3px"
+    ],
+    "650": [
+      "column",
+      "10px",
+      "3px"
+    ],
+    "500": [
+      "column",
+      "0px",
+      "0px"
+    ]
+  },
+  "iconCount": 8,
+  "computedPreview": {
+    "desktop": {
+      "direction": "row-reverse",
+      "gap": "16px",
+      "padding": "40px",
+      "border": "3px",
+      "radius": "20px",
+      "width": 1000
+    },
+    "tablet": {
+      "direction": "column",
+      "gap": "8px",
+      "padding": "8px",
+      "border": "2px",
+      "radius": "6px",
+      "width": 683.21875
+    },
+    "mobile": {
+      "direction": "column",
+      "gap": "0px",
+      "padding": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "width": 351
+    }
+  },
+  "scroll": {
+    "height": 1788,
+    "client": 772,
+    "top": 1016
+  },
+  "consoleErrors": []
+}
