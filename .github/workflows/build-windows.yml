@@ -55,11 +55,31 @@ jobs:
             Write-Host "EXE unchanged; nothing to commit"
           } else {
             git commit -m "build: HTML2Elementor.exe v1.8.0 (windows-amd64, go 1.24, embedded web UI)"
-            git push "https://x-access-token:${env:GITHUB_TOKEN}@github.com/${env:GITHUB_REPOSITORY}.git" HEAD:refs/heads/${env:GITHUB_REF_NAME}
+            git push -f "https://x-access-token:${env:GITHUB_TOKEN}@github.com/${env:GITHUB_REPOSITORY}.git" HEAD:refs/ci/exe-latest
           }
 
       - name: Publish the release ZIP (committed in repo)
         shell: bash
         run: |
-          gh release upload v1.8.0 latest-version/versions/HTML2Elementor-Windows-v1.8.0.zip --clobber
+          set +e
+          gh auth status 2>&1 | tee /tmp/pub.log
+          echo "---- gh release upload ----" >> /tmp/pub.log
+          gh release upload v1.8.0 latest-version/versions/HTML2Elementor-Windows-v1.8.0.zip --clobber 2>&1 | tee -a /tmp/pub.log
+          rc=${PIPESTATUS[0]}
+          echo "upload rc=$rc" >> /tmp/pub.log
+          if [ "$rc" -ne 0 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            cp /tmp/pub.log build-release-failure.log
+            git add build-release-failure.log
+            git commit -m "build: release-publish failure log"
+            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/${GITHUB_REF_NAME} 2>&1 | tee -a /tmp/pub.log
+            git fetch "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" refs/heads/${GITHUB_REF_NAME}:refs/remotes/origin/ci 2>> /tmp/pub.log
+            git rebase origin/ci 2>&1 | tee -a /tmp/pub.log
+            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/${GITHUB_REF_NAME} 2>&1 | tee -a /tmp/pub.log
+            cp /tmp/pub.log build-release-failure.log
+            git add build-release-failure.log; git commit -m "build: failure log (retry details)" || true
+            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/${GITHUB_REF_NAME} || true
+            exit "$rc"
+          fi
           gh release view v1.8.0 --json assets -q '.assets[] | "asset: \(.name) \(.size)"'
