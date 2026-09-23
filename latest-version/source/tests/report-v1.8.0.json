@@ -2,10 +2,10 @@
   "status": "PASS",
   "version": "1.8.0",
   "test_kind": "AI service E2E with mock llama.cpp engine (hybrid ngl, scan/upload/register, chat single/multi/html-edit, vision analyze path)",
-  "date": "2026-09-23 22:08:41",
+  "date": "2026-09-23 23:07:38",
   "engine": "mock_llama_server.py (NOT the real engine; real Qwen/Windows/RTX untested here)",
-  "passed": 18,
-  "total": 18,
+  "passed": 20,
+  "total": 20,
   "checks": {
     "status": {
       "pass": true,
@@ -29,7 +29,7 @@
     "models/upload": {
       "pass": true,
       "detail": {
-        "path": "/tmp/h2e18-r4y5kfby/data/models/Uploaded.gguf",
+        "path": "/tmp/h2e18-nklmcec2/data/models/Uploaded.gguf",
         "bytes": 356
       }
     },
@@ -39,20 +39,64 @@
         "error": "فایل GGUF معتبر نیست (سرآیند GGUF پیدا نشد)"
       }
     },
+    "models/importdir (folder + auto mmproj pairing)": {
+      "pass": true,
+      "detail": {
+        "dir": "/tmp/h2e18-nklmcec2/userdata/models",
+        "registered": [
+          {
+            "name": "Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf",
+            "path": "/tmp/h2e18-nklmcec2/userdata/models/Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf",
+            "projector": null,
+            "id": "b5be7919768e"
+          },
+          {
+            "name": "Qwen3-VL-8B-Instruct-Q4_K_M.gguf",
+            "path": "/tmp/h2e18-nklmcec2/userdata/models/Qwen3-VL-8B-Instruct-Q4_K_M.gguf",
+            "projector": "/tmp/h2e18-nklmcec2/userdata/models/mmproj-Qwen3-VL-8B-Instruct-Q8_0.gguf",
+            "id": "5b20f45c3163"
+          }
+        ],
+        "count": 2,
+        "unpaired_mmproj": []
+      }
+    },
+    "models/pickdir graceful on non-Windows": {
+      "pass": true,
+      "detail": {
+        "error": "POST لازم است"
+      }
+    },
     "models/register (model+mmproj)": {
       "pass": true,
       "detail": {
         "models": [
           {
-            "id": "5f3bb0c54ce0",
+            "id": "b5be7919768e",
+            "name": "Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf",
+            "path": "/tmp/h2e18-nklmcec2/userdata/models/Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf",
+            "bytes": 556,
+            "projector": "",
+            "vision": false
+          },
+          {
+            "id": "5b20f45c3163",
+            "name": "Qwen3-VL-8B-Instruct-Q4_K_M.gguf",
+            "path": "/tmp/h2e18-nklmcec2/userdata/models/Qwen3-VL-8B-Instruct-Q4_K_M.gguf",
+            "bytes": 956,
+            "projector": "/tmp/h2e18-nklmcec2/userdata/models/mmproj-Qwen3-VL-8B-Instruct-Q8_0.gguf",
+            "vision": true
+          },
+          {
+            "id": "c97fb95c7341",
             "name": "MockModel-4B-Q4_K_M.gguf",
-            "path": "/tmp/h2e18-r4y5kfby/data/models/MockModel-4B-Q4_K_M.gguf",
+            "path": "/tmp/h2e18-nklmcec2/data/models/MockModel-4B-Q4_K_M.gguf",
             "bytes": 1056,
-            "projector": "/tmp/h2e18-r4y5kfby/data/models/mmproj-MockModel-4B-Q8_0.gguf",
+            "projector": "/tmp/h2e18-nklmcec2/data/models/mmproj-MockModel-4B-Q8_0.gguf",
             "vision": true
           }
         ],
-        "id": "5f3bb0c54ce0"
+        "id": "c97fb95c7341"
       }
     },
     "models/start hybrid auto-ngl": {
@@ -69,7 +113,7 @@
       "detail": {
         "engine": "ready",
         "active": {
-          "id": "5f3bb0c54ce0",
+          "id": "c97fb95c7341",
           "name": "MockModel-4B-Q4_K_M.gguf",
           "vision": true,
           "mode": "hybrid",
@@ -83,14 +127,14 @@
     "engine args (mock recorded)": {
       "pass": true,
       "detail": {
-        "m": "/tmp/h2e18-r4y5kfby/data/models/MockModel-4B-Q4_K_M.gguf",
+        "m": "/tmp/h2e18-nklmcec2/data/models/MockModel-4B-Q4_K_M.gguf",
         "host": "127.0.0.1",
-        "port": "58331",
-        "api-key": "Xd2bBjv-rSzrzvGCLygdTzklKJ5OhV70",
+        "port": "38765",
+        "api-key": "wxDfI_X6P_6Ql1bLzpyNR1k1Gknk7oQG",
         "c": "16384",
         "t": "2",
         "ngl": "36",
-        "mmproj": "/tmp/h2e18-r4y5kfby/data/models/mmproj-MockModel-4B-Q8_0.gguf"
+        "mmproj": "/tmp/h2e18-nklmcec2/data/models/mmproj-MockModel-4B-Q8_0.gguf"
       }
     },
     "chat plain prompt": {
@@ -134,7 +178,7 @@
       "detail": {
         "engine": "ready",
         "active": {
-          "id": "9734050ce4ce",
+          "id": "867480df7b04",
           "name": "MockCoder-7B-Q4_K_M.gguf",
           "vision": false,
           "mode": "cpu",
@@ -148,10 +192,10 @@
     "text model engine args (-c 16384, -ngl 0)": {
       "pass": true,
       "detail": {
-        "m": "/tmp/h2e18-r4y5kfby/data/models/MockCoder-7B-Q4_K_M.gguf",
+        "m": "/tmp/h2e18-nklmcec2/data/models/MockCoder-7B-Q4_K_M.gguf",
         "host": "127.0.0.1",
-        "port": "46795",
-        "api-key": "Xd2bBjv-rSzrzvGCLygdTzklKJ5OhV70",
+        "port": "47891",
+        "api-key": "wxDfI_X6P_6Ql1bLzpyNR1k1Gknk7oQG",
         "c": "16384",
         "t": "2",
         "ngl": "0"

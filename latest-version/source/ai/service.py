@@ -1,5 +1,5 @@
 """Offline local AI service. No shell commands, remote downloads, or pickle models."""
-import argparse, base64, hashlib, io, json, math, os, random, secrets, socket, struct, subprocess, sys, threading, time
+import argparse, base64, hashlib, io, json, math, os, random, re, secrets, socket, struct, subprocess, sys, threading, time
 from collections import deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from html.parser import HTMLParser
@@ -214,6 +214,56 @@ def engine_log(proc):
     for line in proc.stdout: log(line.rstrip())
     log('Engine exit: '+str(proc.wait()))
 
+def register_model(path_value,projector_value=None):
+    p=gguf_path(path_value)
+    projector=gguf_path(projector_value) if projector_value else None
+    if projector and projector==p:raise ValueError('فایل مدل و mmproj باید جدا باشند')
+    rows=load('models.json',[]);ident=hashlib.sha256((str(p)+'|'+str(projector or '')).encode()).hexdigest()[:12]
+    rows=[x for x in rows if x['id']!=ident];rows.append({'id':ident,'name':p.name,'path':str(p),'bytes':p.stat().st_size,'projector':str(projector) if projector else '', 'vision':bool(projector)});save('models.json',rows)
+    return {'models':rows,'id':ident}
+
+def pick_dir_dialog(title='HTML2Elementor — پوشهٔ مدل‌ها را انتخاب کنید'):
+    if os.name!='nt':raise ValueError('انتخاب پوشه در نسخهٔ ویندوز در دسترس است؛ در صورت نیاز، مسیر را دستی وارد کنید.')
+    import ctypes
+    from ctypes import wintypes
+    buf=ctypes.create_unicode_buffer(260)
+    class BROWSEINFOW(ctypes.Structure):
+        _fields_=[('hwndOwner',wintypes.HWND),('pidlRoot',wintypes.PIDLISTITEM),
+                  ('pszDisplayName',ctypes.c_wchar_p),('lpszTitle',ctypes.LPCWSTR),
+                  ('ulFlags',wintypes.UINT),('lpCallback',ctypes.c_void_p),
+                  ('lParam',ctypes.c_void_p),('iImage',ctypes.c_int)]
+    bi=BROWSEINFOW(None,None,buf,title,1,0,0,0)
+    res=ctypes.windll.shell32.SHBrowseForFolderW(ctypes.byref(bi))
+    if not res:return None
+    ctypes.windll.shell32.SHGetPathFromIDListW(res,buf)
+    return buf.value
+
+def import_dir(d):
+    root=Path(str(d or '').strip().strip(chr(34)))
+    if not root.is_dir():raise ValueError('پوشهٔ انتخابی در دسترس نیست.')
+    files=sorted(p for p in root.iterdir() if p.is_file() and p.suffix.lower()=='.gguf')
+    valid=[]
+    for f in files:
+        try:gguf_path(str(f));valid.append(f)
+        except ValueError:continue
+    if not valid:raise ValueError('هیچ فایل GGUF معتبری در این پوشه پیدا نشد.')
+    projectors=[f for f in valid if 'mmproj' in f.name.lower()]
+    models=[f for f in valid if f not in projectors]
+    if not models:raise ValueError('فقط فایل mmproj پیدا شد؛ فایل اصلی مدل (بدون mmproj) را هم در همین پوشه بگذارید.')
+    def family_of(f):
+        base=f.stem
+        m=re.search(r'(?i)-q[a-z0-9_]+\s*$',base)
+        return (base[:m.start()] if m else base).lower()
+    registered=[];used=set()
+    for f in models:
+        fam=family_of(f)
+        proj=next((x for x in projectors if fam in x.name.lower() or fam in family_of(x)),None)
+        if proj:used.add(proj)
+        r=register_model(str(f),str(proj) if proj else None)
+        registered.append({'name':f.name,'path':str(f),'projector':str(proj) if proj else None,'id':r['id']})
+    log('Imported '+str(len(registered))+' model(s) from '+str(root))
+    return {'dir':str(root),'registered':registered,'count':len(registered),'unpaired_mmproj':[x.name for x in projectors if x not in used]}
+
 def dispatch(path, data=None):
     global PROC, ENGINE_PORT, TRAIN, ACTIVE_MODEL
     with LOCK:
@@ -228,12 +278,11 @@ def dispatch(path, data=None):
         if path=='models/scan':return scan_gguf_dirs()
         if path=='models/upload':return import_upload(data.get('name'),data.get('b64'))
         if path=='models/register':
-            p=gguf_path(data.get('path'))
-            projector=gguf_path(data.get('projector')) if data.get('projector') else None
-            if projector and projector==p:raise ValueError('فایل مدل و mmproj باید جدا باشند')
-            rows=load('models.json',[]);ident=hashlib.sha256((str(p)+'|'+str(projector or '')).encode()).hexdigest()[:12]
-            rows=[x for x in rows if x['id']!=ident];rows.append({'id':ident,'name':p.name,'path':str(p),'bytes':p.stat().st_size,'projector':str(projector) if projector else '', 'vision':bool(projector)});save('models.json',rows)
-            return {'models':rows,'id':ident}
+            return register_model(data.get('path'),data.get('projector'))
+        if path=='models/pickdir':
+            return {'dir':pick_dir_dialog()}
+        if path=='models/importdir':
+            return import_dir(data.get('dir'))
         if path=='models/start':
             model=next((m for m in load('models.json',[]) if m['id']==data.get('id')),None)
             if not model:raise ValueError('ابتدا فایل GGUF را ثبت کنید.')

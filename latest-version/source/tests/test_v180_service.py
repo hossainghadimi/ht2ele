@@ -111,6 +111,22 @@ def main():
         st_bad, r_bad = call("models/upload", {"name": "bad.gguf", "b64": base64.b64encode(b"NOTGGUF0" * 8).decode()})
         step("models/upload rejects bad magic", st_bad == 400, r_bad)
 
+        # importdir with real user-style filenames
+        userdir = tmp / "userdata" / "models"
+        userdir.mkdir(parents=True)
+        (userdir / "Qwen3-VL-8B-Instruct-Q4_K_M.gguf").write_bytes(fake_gguf(36, pad=900))
+        (userdir / "mmproj-Qwen3-VL-8B-Instruct-Q8_0.gguf").write_bytes(fake_gguf(4, pad=400))
+        (userdir / "Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf").write_bytes(fake_gguf(28, pad=500))
+        (userdir / "README.txt").write_text("readme")
+        st, r = call("models/importdir", {"dir": str(userdir)})
+        reg = {x["name"]: x for x in r.get("registered", [])}
+        ok_pair = reg.get("Qwen3-VL-8B-Instruct-Q4_K_M.gguf", {}).get("projector", "")
+        step("models/importdir (folder + auto mmproj pairing)",
+             st == 200 and r.get("count") == 2 and "mmproj" in ok_pair
+             and reg.get("Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf", {}).get("projector") in (None, ""), r)
+        st_bad, r_bad = call("models/pickdir")
+        step("models/pickdir graceful on non-Windows", st_bad == 400, r_bad)
+
         st, r = call("models/register", {"path": str(models_dir / "MockModel-4B-Q4_K_M.gguf"),
                                          "projector": str(models_dir / "mmproj-MockModel-4B-Q8_0.gguf")})
         model_id = r.get("id")
