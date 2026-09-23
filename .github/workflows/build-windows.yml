@@ -57,3 +57,9 @@ jobs:
             git commit -m "build: HTML2Elementor.exe v1.8.0 (windows-amd64, go 1.24, embedded web UI)"
             git push "https://x-access-token:${env:GITHUB_TOKEN}@github.com/${env:GITHUB_REPOSITORY}.git" HEAD:refs/heads/${env:GITHUB_REF_NAME}
           }
+
+      - name: Publish the release ZIP
+        shell: pwsh
+        run: |
+          python latest-version/build-v1.8.0.py
+          gh release upload v1.8.0 latest-version/versions/HTML2Elementor-Windows-v1.8.0.zip --clobber
