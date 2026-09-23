@@ -1,0 +1,5 @@
+Microsoft Visual C++ runtime libraries are redistributed app-locally as runtime dependencies.
+Source: Microsoft's signed Microsoft.VCLibs.x64.14.00.Desktop.appx
+https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+These components remain subject to Microsoft's applicable licensing terms and are not covered by llama.cpp's MIT license.
+Windows 10/11 system libraries and a compatible NVIDIA driver (only if using the optional CUDA engine) are supplied by the operating system/vendor, not this application.

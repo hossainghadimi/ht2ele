@@ -1,0 +1,13 @@
+HTML2Elementor 1.7.0
+Windows 10/11, x64
+
+Extract the COMPLETE ZIP, including runtime, ai and engine folders, then double-click HTML2Elementor.exe. Python, Pillow, micrograd and the CPU GGUF engine are bundled; no installation or internet is required for the base app. GGUF model weights and optional CUDA engine are NOT bundled.
+Keep the console window open. Closing it stops the application.
+If an earlier release is open, close it first.
+
+The application opens http://127.0.0.1:7788/ in your browser.
+If Windows warns about an unsigned executable, verify the package source and hash before choosing to run it.
+
+Export both Elementor JSON and its companion CSS. Test the imported template on a staging WordPress site.
+See RELEASE-v1.7.0.md for supported widgets and limitations.
+Editable source code is included in source/.
