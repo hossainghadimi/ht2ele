@@ -40,3 +40,16 @@ jobs:
         with:
           name: html2elementor-windows-exe
           path: latest-version/source/dist/HTML2Elementor.exe
+
+      - name: Commit EXE back to the repo
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add latest-version/source/dist/HTML2Elementor.exe
+          if (git diff --cached --quiet) {
+            Write-Host "EXE unchanged; nothing to commit"
+          } else {
+            git commit -m "build: HTML2Elementor.exe v1.8.0 (windows-amd64, go 1.24, embedded web UI)"
+            git push origin HEAD
+          }
