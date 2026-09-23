@@ -1,5 +1,5 @@
 """Offline local AI service. No shell commands, remote downloads, or pickle models."""
-import argparse, base64, hashlib, io, json, math, os, random, secrets, socket, subprocess, sys, threading, time
+import argparse, base64, hashlib, io, json, math, os, random, secrets, socket, struct, subprocess, sys, threading, time
 from collections import deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from html.parser import HTMLParser
@@ -41,6 +41,87 @@ def gguf_path(value):
     with p.open('rb') as f:
         if f.read(4)!=b'GGUF':raise ValueError('سرآیند فایل GGUF معتبر نیست')
     return p
+
+def gguf_blocks(path):
+    """Transformer block count from GGUF metadata (for hybrid ngl). None if unavailable."""
+    try:
+        with open(path,'rb') as f:
+            head=f.read(24)
+            if len(head)<24 or head[:4]!=b'GGUF':return None
+            kvcount=int.from_bytes(head[16:24],'little')
+            if kvcount<=0 or kvcount>4096:return None
+            widths={0:1,1:1,2:2,3:2,4:4,5:4,6:8,7:8,8:4,9:8,10:1}
+            for _ in range(kvcount):
+                klen_b=f.read(8)
+                if len(klen_b)<8:break
+                klen=int.from_bytes(klen_b,'little')
+                if klen>1_000_000:break
+                key=f.read(klen)
+                if len(key)<klen:break
+                vt_b=f.read(4)
+                if len(vt_b)<4:break
+                vt=int.from_bytes(vt_b,'little')
+                if vt==11:
+                    slen_b=f.read(8)
+                    if len(slen_b)<8:break
+                    slen=int.from_bytes(slen_b,'little')
+                    if slen>1_000_000:break
+                    f.seek(slen,1)
+                elif vt in widths:
+                    raw=f.read(widths[vt])
+                    if len(raw)<widths[vt]:break
+                    if key.endswith(b'block_count') and vt in (4,5,6,7):
+                        v=int.from_bytes(raw,'little')
+                        if 0<v<100000:return v
+                else:break
+    except OSError:
+        pass
+    return None
+
+def scan_gguf_dirs():
+    cands=[]
+    la=os.environ.get('LOCALAPPDATA')
+    if la:cands.append(Path(la)/'HTML2Elementor-models')
+    home=Path.home()
+    cands += [DATA/'models', ROOT/'models', home/'models', home/'Downloads'/'models']
+    for drv in ('C','D','E','F','G'):
+        cands.append(Path(drv+':/Models'))
+    seen=set();models=[];dirs=[]
+    for d in cands:
+        try:
+            if not d.is_dir():continue
+            r=d.resolve()
+            if r in seen:continue
+        except OSError:continue
+        seen.add(r);dirs.append(str(d))
+        try:
+            entries=sorted(d.iterdir())
+        except OSError:continue
+        for f in entries:
+            if f.suffix.lower()!='.gguf':continue
+            try:
+                if not f.is_file():continue
+                st=f.stat()
+            except OSError:continue
+            models.append({'path':str(f),'name':f.name,'bytes':st.st_size,'blocks':gguf_blocks(f),'projector':f.name.lower().startswith('mmproj')})
+            if len(models)>=100:break
+        if len(models)>=100:break
+    return {'dirs':dirs,'models':models}
+
+def import_upload(name,b64):
+    base=Path(str(name or '')).name
+    if not base or Path(base).suffix.lower()!='.gguf':raise ValueError('فایل باید GGUF باشد (پسوند .gguf)')
+    if not isinstance(b64,str) or len(b64)>10_000_000:raise ValueError('سقف ایمپورت مستقیم: ۸ مگابایت؛ مدل‌های بزرگ‌تر را از مسیر فایل ثبت کنید یا اسکن دیسک را بزنید.')
+    try:raw=base64.b64decode(b64,validate=True)
+    except Exception:raise ValueError('داده base64 نامعتبر است')
+    if len(raw)<24 or raw[:4]!=b'GGUF':raise ValueError('فایل GGUF معتبر نیست (سرآیند GGUF پیدا نشد)')
+    if len(raw)>8_000_000:raise ValueError('فایل بزرگ‌تر از ۸ مگابایت است')
+    target=DATA/'models';target.mkdir(parents=True,exist_ok=True)
+    dest=target/base
+    if dest.exists():dest=target/(base[:-4]+'-'+secrets.token_hex(3)+'.gguf')
+    dest.write_bytes(raw)
+    log('Model imported: '+str(dest))
+    return {'path':str(dest),'bytes':len(raw)}
 
 def model_request(port,payload,timeout=900):
     req=Request(f'http://127.0.0.1:{port}/v1/chat/completions',data=json.dumps(payload).encode(),headers={'Content-Type':'application/json','Authorization':'Bearer '+ENGINE_KEY})
@@ -137,8 +218,15 @@ def dispatch(path, data=None):
     global PROC, ENGINE_PORT, TRAIN, ACTIVE_MODEL
     with LOCK:
         if path=='status':
-            return {'ok':True,'python':sys.version.split()[0],'vision':'Pillow','ml':'micrograd','offline':True,'engine':engine_status(),'training':TRAIN,'samples':len(load('samples.json',[])),'data_dir':str(DATA),'model':load('classifier.json',{}).get('labels',[]),'logs':list(LOG),'active_model':ACTIVE_MODEL,'vision_busy':VISION_JOBS.busy()}
-        if path=='models':return {'models':load('models.json',[])}
+            engine_exe=Path(os.environ.get('H2E_ENGINE_ROOT',str(ROOT)))/'engine-cuda'/('llama-server.exe' if os.name=='nt' else 'llama-server')
+            return {'ok':True,'python':sys.version.split()[0],'vision':'Pillow','ml':'micrograd','offline':True,'engine':engine_status(),'training':TRAIN,'samples':len(load('samples.json',[])),'data_dir':str(DATA),'model':load('classifier.json',{}).get('labels',[]),'logs':list(LOG),'active_model':ACTIVE_MODEL,'vision_busy':VISION_JOBS.busy(),'cuda_engine':engine_exe.is_file()}
+        if path=='models':
+            rows=load('models.json',[])
+            for row in rows:
+                row['blocks']=gguf_blocks(row.get('path',''))
+            return {'models':rows}
+        if path=='models/scan':return scan_gguf_dirs()
+        if path=='models/upload':return import_upload(data.get('name'),data.get('b64'))
         if path=='models/register':
             p=gguf_path(data.get('path'))
             projector=gguf_path(data.get('projector')) if data.get('projector') else None
@@ -149,21 +237,42 @@ def dispatch(path, data=None):
         if path=='models/start':
             model=next((m for m in load('models.json',[]) if m['id']==data.get('id')),None)
             if not model:raise ValueError('ابتدا فایل GGUF را ثبت کنید.')
-            mode=data.get('mode','cpu'); folder='engine-cuda' if mode=='cuda' else 'engine'
+            mode=str(data.get('mode') or 'cpu')
+            if mode not in ('cpu','cuda','hybrid'):raise ValueError('موتور باید cpu، cuda یا hybrid باشد.')
+            folder='engine-cuda' if mode in ('cuda','hybrid') else 'engine'
             exe=Path(os.environ.get('H2E_ENGINE_ROOT',str(ROOT)))/folder/('llama-server.exe' if os.name=='nt' else 'llama-server')
-            if not exe.is_file():raise ValueError('موتور '+folder+' موجود نیست. بسته سبک موتور CPU دارد؛ CUDA جداگانه اضافه می‌شود.')
+            if not exe.is_file():
+                if mode in ('cuda','hybrid'):raise ValueError('موتور CUDA موجود نیست؛ حالت «GPU+CPU همزمان» (hybrid) همان موتور engine-cuda با تعداد لایهٔ کمتر است و جدا از موتور CPU لازم دارد. تا نصبش، حالت CPU را استفاده کنید.')
+                raise ValueError('موتور '+folder+' موجود نیست. بسته سبک موتور CPU دارد؛ CUDA جداگانه اضافه می‌شود.')
             gguf_path(model['path'])
             if model.get('projector'):gguf_path(model['projector'])
             stop_engine()
             with socket.socket() as s:s.bind(('127.0.0.1',0));ENGINE_PORT=s.getsockname()[1]
-            args=[str(exe),'-m',model['path'],'--host','127.0.0.1','--port',str(ENGINE_PORT),'--api-key',ENGINE_KEY,'-c','8192' if model.get('projector') else '2048','--parallel','1','--offline','-t',str(max(1,min(8,os.cpu_count() or 2))),'-ngl','20' if mode=='cuda' else '0']
+            context=8192 if model.get('projector') else 2048
+            blocks=gguf_blocks(model['path'])
+            vram=0.0;ngl=0
+            if mode!='cpu':
+                try:vram=max(2.0,min(96.0,float(data.get('vram_gb') or 8.0)))
+                except Exception:vram=8.0
+                ngl_req=data.get('ngl')
+                if isinstance(ngl_req,(int,float)) and not isinstance(ngl_req,bool) and int(ngl_req)>=0:
+                    ngl=int(ngl_req)
+                elif blocks:
+                    per_layer=max(1.0,float(model.get('bytes') or 0)/blocks)
+                    usable_gb=max(0.5,vram*0.70-1.0)
+                    ngl=max(0,min(blocks,int(usable_gb*1_000_000_000//per_layer)))
+                else:
+                    ngl=20
+                if blocks:ngl=min(ngl,blocks)
+            args=[str(exe),'-m',model['path'],'--host','127.0.0.1','--port',str(ENGINE_PORT),'--api-key',ENGINE_KEY,'-c',str(context),'--parallel','1','--offline','-t',str(max(1,min(8,os.cpu_count() or 2))),'-ngl',str(ngl)]
             if model.get('projector'):
                 args.extend(['--mmproj',model['projector'],'--image-min-tokens','128','--image-max-tokens','1536','--mtmd-batch-max-tokens','512'])
                 if mode=='cpu':args.append('--no-mmproj-offload')
-            ACTIVE_MODEL={'id':model['id'],'name':model['name'],'vision':bool(model.get('projector')),'mode':mode,'context':8192 if model.get('projector') else 2048}
+            ACTIVE_MODEL={'id':model['id'],'name':model['name'],'vision':bool(model.get('projector')),'mode':mode,'ngl':ngl,'vram_gb':vram,'blocks':blocks,'context':context}
             PROC=subprocess.Popen(args,cwd=exe.parent,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding='utf-8',errors='replace',creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
-            threading.Thread(target=engine_log,args=(PROC,),daemon=True).start();log('Loading '+model['name']+' / '+mode)
-            return {'state':'loading'}
+            threading.Thread(target=engine_log,args=(PROC,),daemon=True).start()
+            log('Loading '+model['name']+' / '+mode+(' / ngl='+str(ngl)+' از '+str(blocks) if blocks and mode!='cpu' else '')+(' / VRAM تخمینی '+str(vram)+'GB' if vram else ''))
+            return {'state':'loading','mode':mode,'ngl':ngl,'blocks':blocks}
         if path=='models/stop':stop_engine();return {'state':'stopped'}
         if path.startswith('vision/jobs/'):
             return VISION_JOBS.get(path.rsplit('/',1)[-1])
@@ -204,11 +313,39 @@ def dispatch(path, data=None):
             out=net(features(data));rank=sorted(zip(model['labels'],[round(x.data,4) for x in out]),key=lambda x:-x[1]);return {'label':rank[0][0],'ranking':rank,'note':'پیشنهاد دسته‌بند؛ امتیازها احتمال کالیبره‌شده نیستند.'}
     if path=='chat':
         if VISION_JOBS.busy():raise ValueError('تحلیل تصویر در حال اجراست؛ برای گفت‌وگو صبر کنید یا تحلیل را لغو کنید')
-        prompt=str(data.get('prompt',''))
-        if not prompt.strip() or len(prompt)>12000:raise ValueError('پیام خالی یا بلندتر از ۱۲۰۰۰ کاراکتر است')
+        messages=data.get('messages')
+        if messages is None:
+            prompt=data.get('prompt')
+            if isinstance(prompt,str):
+                if not prompt.strip() or len(prompt)>60000:raise ValueError('پیام خالی یا بیش از حد بزرگ است')
+                messages=[{'role':'user','content':prompt}]
+            elif isinstance(prompt,list):
+                messages=[{'role':'user','content':prompt}]
+            else:
+                raise ValueError('prompt لازم است (متن یا آرایهٔ بخش‌های text/image_url)')
+        if not isinstance(messages,list) or not 1<=len(messages)<=64:raise ValueError('messages نامعتبر است (حداکثر ۶۴ پیام)')
+        for m in messages:
+            if not isinstance(m,dict) or m.get('role') not in ('system','user','assistant'):raise ValueError('role پیام نامعتبر است')
+            c=m.get('content')
+            if isinstance(c,str):
+                if not c.strip() or len(c)>120000:raise ValueError('محتوای پیام خالی یا بیش از حد بزرگ است')
+            elif isinstance(c,list) and c:
+                for part in c:
+                    if not isinstance(part,dict) or part.get('type') not in ('text','image_url'):raise ValueError('بخش پیام نامعتبر است')
+                    if part.get('type')=='text' and len(str(part.get('text','')))>120000:raise ValueError('بخش متنی بیش از حد بزرگ است')
+            else:
+                raise ValueError('محتوای پیام نامعتبر است')
+        system=data.get('system')
+        if isinstance(system,str) and system.strip():
+            messages=[{'role':'system','content':system[:4000]}]+messages
+        try:max_tokens=max(64,min(8192,int(data.get('max_tokens') or 2048)))
+        except Exception:raise ValueError('max_tokens نامعتبر است')
+        try:temperature=max(0.0,min(2.0,float(data.get('temperature') or 0.3)))
+        except Exception:temperature=0.3
         if engine_status()!='ready':raise ValueError('مدل آماده نیست؛ لاگ را بررسی کنید')
-        req=Request(f'http://127.0.0.1:{ENGINE_PORT}/v1/chat/completions',data=json.dumps({'messages':[{'role':'user','content':prompt}],'max_tokens':256,'temperature':.3,'stream':False}).encode(),headers={'Content-Type':'application/json','Authorization':'Bearer '+ENGINE_KEY})
-        with urlopen(req,timeout=180) as r:result=json.load(r)
+        payload={'messages':messages,'max_tokens':max_tokens,'temperature':temperature,'stream':False}
+        req=Request(f'http://127.0.0.1:{ENGINE_PORT}/v1/chat/completions',data=json.dumps(payload).encode(),headers={'Content-Type':'application/json','Authorization':'Bearer '+ENGINE_KEY})
+        with urlopen(req,timeout=900) as r:result=json.load(r)
         return {'text':result['choices'][0]['message']['content']}
     raise ValueError('مسیر ناشناخته')
 
@@ -220,7 +357,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.headers.get('X-H2E-Token')!=self.server.token:self.send_error(403);return
         try:
             path=self.path.split('?',1)[0].removeprefix('/api/ai/')
-            if not post and path not in ('status','models','samples') and not path.startswith('vision/jobs/'):raise ValueError('POST لازم است')
+            if not post and path not in ('status','models','samples','models/scan') and not path.startswith('vision/jobs/'):raise ValueError('POST لازم است')
             length=int(self.headers.get('Content-Length','0'))
             if length>12_000_000:raise ValueError('درخواست بیش از حد بزرگ است')
             data=json.loads(self.rfile.read(length)) if post else None

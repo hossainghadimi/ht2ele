@@ -410,6 +410,20 @@
     });
     $$(".tab").forEach((t) => t.addEventListener("click", () => switchTab(t.dataset.tab)));
     if (window.H2EPreview) H2EPreview.mount("#liveHost");
+    if (window.H2EChat && window.H2ESource && $("#stage2ChatHost")) {
+      H2EChat.mount($("#stage2ChatHost"), {
+        title: "مرحلهٔ ۲ — تغییرات HTML پیش از تبدیل با AI",
+        getHtml: () => {
+          const f = H2ESource.current();
+          if (!f) throw Error("فایل HTML ورودی موجود نیست؛ ابتدا یک HTML وارد کنید یا از مرحلهٔ ۱ تأیید نهایی را بزنید.");
+          return f.content;
+        },
+        applyHtml: (html) => {
+          if (!H2ESource.replaceCurrent(html)) throw Error("اعمال ناموفق شد — فایل انتخابی پیدا نشد.");
+        },
+        afterApply: " — حالا دکمهٔ «تبدیل همین ورودی‌ها» را بزنید.",
+      });
+    }
     renderResults();
     refreshSource();
     switchTab("source");
@@ -435,7 +449,16 @@
     }
   }
 
-  window.H2EApp={images:()=>state.imageFiles,options:optionsFromForm,show:switchTab,addFiles,download:downloadBlob,
+  window.H2EApp={images:()=>state.imageFiles,options:optionsFromForm,show:switchTab,addFiles,download:downloadBlob,htmlFiles:()=>state.htmlFiles,convert:()=>convertAll(),
+    handoffHTML(name,html){
+      const rec={name,content:html,size:new TextEncoder().encode(html).length,path:name};
+      const i=state.htmlFiles.findIndex(x=>x.name===name);
+      if(i>=0)state.htmlFiles[i]=rec;else state.htmlFiles.unshift(rec);
+      renderFiles();
+      refreshSource();
+      switchTab('source');
+      toast('HTML تاییدشده در مرحلهٔ ۲ آماده است — بررسی کنید و «تبدیل به المنتور» را بزنید');
+    },
     acceptVision(r){state.results=[r,...state.results.filter(old=>old.sourceName!==r.sourceName)];renderResults();H2EPreview.setResults(state.results,(changed)=>{renderResults();if(state.activeTab==='json')$('#jsonHost').innerHTML='<pre class="view">'+escape(changed.jsonText)+'</pre>';});switchTab('live');toast('طرح بومی ساخته شد؛ روی هر المان کلیک و آن را اصلاح کنید');}
   };
   document.addEventListener("DOMContentLoaded", init);

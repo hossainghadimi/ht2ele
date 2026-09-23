@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-const version = "1.7.0"
+const version = "1.8.0"
 
 //go:embed all:web
 var webRoot embed.FS

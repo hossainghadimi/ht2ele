@@ -100,7 +100,20 @@
   function resizeSource(view,w,h){const n=sourceNode(view.dataset.h2eNode);if(n===rec().doc.body)throw new Error('اندازهٔ فرزند را تغییر دهید، نه بدنهٔ کل صفحه');snapshot();sourceCSS(n,{width:w+'px',height:h+'px','box-sizing':'border-box','flex-shrink':'0','max-width':'none'});commit();}
   function moveSource(view,target){const n=sourceNode(view.dataset.h2eNode),t=sourceNode(target.dataset.h2eNode);if(n===rec().doc.body||n.parentElement!==t.parentElement)throw new Error('فقط المان‌های هم‌سطح قابل جابه‌جایی‌اند');const cs=view.ownerDocument.defaultView.getComputedStyle(view);if(/absolute|fixed/.test(cs.position))throw new Error('المان با موقعیت absolute/fixed: از تنظیمات موقعیت استفاده کنید');const par=n.parentElement,pv=view.parentElement,fd=view.ownerDocument;const nodes=[...par.children].filter(e=>e.hasAttribute('data-h2e-node'));nodes.sort((a,b)=>{const A=fd.querySelector('[data-h2e-node="'+a.dataset.h2eNode+'"]'),B=fd.querySelector('[data-h2e-node="'+b.dataset.h2eNode+'"]');return (parseInt(fd.defaultView.getComputedStyle(A).order)||0)-(parseInt(fd.defaultView.getComputedStyle(B).order)||0)});const to=nodes.indexOf(t);nodes.splice(nodes.indexOf(n),1);nodes.splice(to,0,n);snapshot();if(!/flex|grid/.test(fd.defaultView.getComputedStyle(pv).display))sourceCSS(par,{display:'flex','flex-direction':'column'});nodes.forEach((e,i)=>sourceCSS(e,{order:i}));commit();}
   function selection(){const n=original();if(!n)return null;return {kind:'html',html:n.outerHTML};}
+  function current(){return state.files[state.index]||null;}
+  function replaceCurrent(html){
+    const f=state.files[state.index];
+    if(!f||typeof html!=='string'||!html.trim())return false;
+    const r=rec();
+    snapshot();
+    const doc=new DOMParser().parseFromString(html,'text/html');
+    [doc.body,...doc.body.querySelectorAll('*')].forEach(el=>{if(!el.hasAttribute('data-h2e-node'))el.setAttribute('data-h2e-node',key());});
+    r.doc=doc;
+    state.selected=null;
+    commit();
+    return true;
+  }
   function applyType(type){const n=original();if(!n||!TYPES.some(t=>t[0]===type))return false;snapshot();n.setAttribute('data-h2e-widget',type);commit();return true;}
   function setFiles(files,css,images,onChange){state.files=files||[];state.css=css||[];state.images=images||[];state.onChange=onChange||state.onChange;state.index=Math.min(state.index,Math.max(0,state.files.length-1));if(!$('#sourceFrame'))mount();else paint();}
-  global.H2ESource={mount,setFiles,refresh:paint,selection,applyType};
+  global.H2ESource={mount,setFiles,refresh:paint,selection,applyType,current,replaceCurrent};
 })(window);

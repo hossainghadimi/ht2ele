@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="top-actions">
-        <div class="badge">ویندوز · آفلاین · نسخه ۱.۷.۰</div>
+        <div class="badge">ویندوز · آفلاین · نسخه ۱.۸.۰</div>
         <a class="btn btn-winzip" id="btnWinZip" href="/download/windows.zip" download="HTML2Elementor-Windows.zip" hidden>دانلود نسخه ویندوز (ZIP)</a>
         <a class="btn btn-ghost" id="btnVersions" href="/download/versions.zip" hidden>آرشیو نسخه‌ها</a>
         <button class="btn btn-exit" id="btnExit" type="button" hidden>خروج از برنامه</button>
@@ -88,16 +88,16 @@
 
       <main class="card workspace">
         <div class="tabs">
-          <button class="tab active" data-tab="source" type="button">پیش‌نمایش و اصلاح ورودی</button>
+          <button class="tab active" data-tab="source" type="button">مرحلهٔ ۲: HTML به المنتور</button>
           <button class="tab" data-tab="convert" type="button">خروجی</button>
           <button class="tab" data-tab="live" type="button">پیش‌نمایش و ویرایش</button>
           <button class="tab" data-tab="json" type="button">کد JSON</button>
-          <button class="tab" data-tab="vision" type="button">تصویر به طرح با Qwen</button>
+          <button class="tab" data-tab="vision" type="button">مرحلهٔ ۱: تصویر به HTML</button>
           <button class="tab" data-tab="ai" type="button">کارگاه AI و آموزش</button>
           <button class="tab" data-tab="help" type="button">راهنمای وارد کردن</button>
         </div>
 
-        <section class="pane active" id="pane-source"><div id="sourceHost"></div></section>
+        <section class="pane active" id="pane-source"><div id="sourceHost"></div><div id="stage2ChatHost"></div></section>
         <section class="pane" id="pane-convert">
           <div id="resultsHost"></div>
         </section>
@@ -152,6 +152,19 @@
           <h3>روش سادهٔ قدیمی تصویر — بدون مدل</h3>
           <p>اسکرین‌شات PNG/JPG یک سکشن را رها کنید. برنامه نوارهای افقی/عمودی را تشخیص می‌دهد، کانتینر ردیف یا ستون می‌سازد، رنگ یکدست را پس‌زمینه می‌کند و محتوای پیچیده را به‌صورت ویجت تصویر برش می‌دهد.</p>
 
+          <h3>روند دو مرحله‌ای نسخه ۱.۸</h3>
+          <ol>
+            <li><b>مرحلهٔ ۱ — تصویر به HTML:</b> تصویر طرح را وارد کنید؛ مدل بینایی (Qwen-VL) ساختار را می‌سازد. HTML بازسازی‌شده را می‌بینید و با <b>چت‌باکس هوش مصنوعی</b> بدون لمس کد تغییرش می‌دهید (یا در کادر کد ویرایش می‌کنید).</li>
+            <li><b>تأیید نهایی:</b> دکمهٔ «تأیید نهایی و انتقال به مرحلهٔ ۲» HTML تاییدشده را به مرحلهٔ دوم می‌فرستد.</li>
+            <li><b>مرحلهٔ ۲ — HTML به المنتور:</b> HTML را در بوم ورودی ببینید؛ با <b>چت‌باکس همین تب</b> اصلاحات نهایی را بزنید، سپس «تبدیل به المنتور» و دانلود JSON + CSS.</li>
+          </ol>
+          <p>چت‌باکس‌ها با مدل GGUF محلی کار می‌کنند؛ برای آن‌ها یک مدل متنی (بدون mmproj) روی CPU کافی است و نیازی به مدل بینایی فعال نیست. خروجی مدل همیشه پیش از اعمال نمایش داده می‌شود و بدون تأیید شما چیزی تغییر نمی‌کند.</p>
+          <h3>مدل‌های محلی — ثبت، اسکن، GPU+CPU همزمان</h3>
+          <ul>
+            <li>در «کارگاه AI» می‌توانید مسیر GGUF را ثبت کنید، <b>اسکن دیسک</b> بزنید تا فایل‌های موجود در پوشه‌های مدل پیدا شوند، یا فایل‌های کوچک (تا 8MB) را <b>مستقیم ایمپورت</b> کنید.</li>
+            <li>حالت <b>GPU+CPU همزمان (hybrid)</b> لایه‌های مدل را بین GPU و CPU تقسیم می‌کند؛ هر دو پردازنده هم‌زمان کار می‌کنند. تعداد لایهٔ GPU (ngl) از تعداد لایهٔ واقعی مدل (خوانده‌شده از فایل GGUF) و VRAM تخمین زده می‌شود و قابل تنظیم است.</li>
+            <li>برای کارت ۸ گیگابایتی: مدل بینایی ۸B با hybrid دقت بالاتری می‌دهد؛ مدل ۴B سریع‌تر است. پیشنهادها با لینک مخزن رسمی داخل کارگاه AI است.</li>
+          </ul>
           <h3>نکته‌ها</h3>
           <ul>
             <li>اگر صفحه به فایل CSS خارجی لینک شده، همان فایل CSS را هم همراه HTML در نرم‌افزار رها کنید.</li>
@@ -174,6 +187,7 @@
   <script src="source-editor.js"></script>
   <script src="widget-types.js"></script>
   <script src="preview.js"></script>
+  <script src="ai-chat.js"></script>
   <script src="vision-layout.js"></script>
   <script src="app.js"></script>
   <script src="vision-studio.js"></script>

@@ -1,0 +1,138 @@
+{
+  "status": "PASS",
+  "version": "1.8.0",
+  "test_kind": "AI service E2E with mock llama.cpp engine (hybrid ngl, scan/upload/register, chat single/multi/html-edit, vision analyze path)",
+  "date": "2026-09-23 21:43:30",
+  "engine": "mock_llama_server.py (NOT the real engine; real Qwen/Windows/RTX untested here)",
+  "passed": 15,
+  "total": 15,
+  "checks": {
+    "status": {
+      "pass": true,
+      "detail": {
+        "engine": "stopped",
+        "cuda_engine": true,
+        "python": "3.11.2"
+      }
+    },
+    "models/scan": {
+      "pass": true,
+      "detail": {
+        "found": [
+          "MockModel-4B-Q4_K_M.gguf",
+          "mmproj-MockModel-4B-Q8_0.gguf"
+        ],
+        "blocks": 36
+      }
+    },
+    "models/upload": {
+      "pass": true,
+      "detail": {
+        "path": "/tmp/h2e18-kwlav98i/data/models/Uploaded.gguf",
+        "bytes": 356
+      }
+    },
+    "models/upload rejects bad magic": {
+      "pass": true,
+      "detail": {
+        "error": "فایل GGUF معتبر نیست (سرآیند GGUF پیدا نشد)"
+      }
+    },
+    "models/register (model+mmproj)": {
+      "pass": true,
+      "detail": {
+        "models": [
+          {
+            "id": "6d0dcfbd36ad",
+            "name": "MockModel-4B-Q4_K_M.gguf",
+            "path": "/tmp/h2e18-kwlav98i/data/models/MockModel-4B-Q4_K_M.gguf",
+            "bytes": 1056,
+            "projector": "/tmp/h2e18-kwlav98i/data/models/mmproj-MockModel-4B-Q8_0.gguf",
+            "vision": true
+          }
+        ],
+        "id": "6d0dcfbd36ad"
+      }
+    },
+    "models/start hybrid auto-ngl": {
+      "pass": true,
+      "detail": {
+        "state": "loading",
+        "mode": "hybrid",
+        "ngl": 36,
+        "blocks": 36
+      }
+    },
+    "engine ready (hybrid)": {
+      "pass": true,
+      "detail": {
+        "engine": "ready",
+        "active": {
+          "id": "6d0dcfbd36ad",
+          "name": "MockModel-4B-Q4_K_M.gguf",
+          "vision": true,
+          "mode": "hybrid",
+          "ngl": 36,
+          "vram_gb": 8.0,
+          "blocks": 36,
+          "context": 8192
+        }
+      }
+    },
+    "engine args (mock recorded)": {
+      "pass": true,
+      "detail": {
+        "m": "/tmp/h2e18-kwlav98i/data/models/MockModel-4B-Q4_K_M.gguf",
+        "host": "127.0.0.1",
+        "port": "60981",
+        "api-key": "CszP8UjGL-bn9ut4XCsfh100xqtAsuxh",
+        "c": "8192",
+        "t": "2",
+        "ngl": "36",
+        "mmproj": "/tmp/h2e18-kwlav98i/data/models/mmproj-MockModel-4B-Q8_0.gguf"
+      }
+    },
+    "chat plain prompt": {
+      "pass": true,
+      "detail": {
+        "text": "OK-TEST :: سلام"
+      }
+    },
+    "chat html-edit request": {
+      "pass": true,
+      "detail": "```html\n<!doctype html><html dir=\"rtl\"><head><meta charset=\"utf-8\"></head><body><main class=\"vl-page\" style=\"background:"
+    },
+    "chat multi-turn": {
+      "pass": true,
+      "detail": {
+        "text": "OK-TEST :: مرحله ۱ پاسخ ۱ مرحله ۲"
+      }
+    },
+    "chat rejects bad role": {
+      "pass": true,
+      "detail": {
+        "error": "role پیام نامعتبر است"
+      }
+    },
+    "models/start rejects bad mode": {
+      "pass": true,
+      "detail": {
+        "error": "موتور باید cpu، cuda یا hybrid باشد."
+      }
+    },
+    "vision/analyze E2E (mock VL)": {
+      "pass": true,
+      "detail": {
+        "state": "ready",
+        "error": null,
+        "node_count": 1
+      }
+    },
+    "models/stop": {
+      "pass": true,
+      "detail": {
+        "state": "stopped"
+      }
+    }
+  }
+}
