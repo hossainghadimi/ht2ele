@@ -1,0 +1,6 @@
+You are not logged into any GitHub hosts. To log in, run: gh auth login
+---- gh release upload ----
+gh: To use GitHub CLI in a GitHub Actions workflow, set the GH_TOKEN environment variable. Example:
+  env:
+    GH_TOKEN: ${{ github.token }}
+upload rc=4
